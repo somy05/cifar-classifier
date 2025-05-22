@@ -5,7 +5,6 @@ from torchvision.transforms import ToTensor, Compose, RandomHorizontalFlip, Rand
 import torch.optim as optim
 import torch.nn.functional as F
 import torch.nn as nn
-import numpy as np
 import os
 
 class CNNBase(nn.Module):
@@ -40,13 +39,12 @@ class CNNBase(nn.Module):
 
 def main():
 
-    
-    torch.set_num_threads(6)
+    torch.set_num_threads(6) #used to increase the number of cores used on my laptop from 2 to 6, can be removed if not needed
     device = torch.device('cpu')
     print(f"Using {device}")
     batch_size = 128
     learning_rate = 0.001
-    num_epochs = 30
+    num_epochs = 50 
     model_path = "cnnmodel.pth"
     
     train_transform = Compose([
@@ -73,7 +71,7 @@ def main():
     model = CNNBase(num_classes=10).to(device)
     loss_fn = nn.CrossEntropyLoss()
     #add weight decay as regularisation term
-    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=0.0001)
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=0.0001)
     if os.path.isfile(model_path):
         checkpoint = torch.load(model_path, map_location=device)
         model.load_state_dict(checkpoint['model_state_dict'])
